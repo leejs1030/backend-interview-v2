@@ -1,20 +1,24 @@
 declare module 'custom-type'{
   export type product = {
     id: number,
-    name?: string,
-    description?: string,
+    name: string,
     brand?: string,
     price?: number,
-    size?: string|number,
+    size?: string,
     color?: string,
   }
 
-
-  export type filter = {
-    
+  export type description = {
+    id: number,
+    description?: string,
   }
 
-  export type property = 'name' | 'brand' | 'price' | 'size' | 'color';
+
+  // export type filter = {
+    
+  // }
+
+  // export type property = 'name' | 'brand' | 'price' | 'size' | 'color';
 
   
   import pgPromise from 'pg-promise';
