@@ -4,9 +4,21 @@ import db from 'src/lib/dbconnection';
 
 @Injectable()
 export class ProductService {
+  /**
+   * 
+   * @param task 
+   * db 커넥션 하나로
+   * @returns 
+   * 제품마다 기본 정보(이름, 설명, 브랜드, 가격, 색상), 좋아요 수 를 가진 정보 줌
+   * 그러면 리스트 만들어서 리턴
+   */
   async getProducts(task: atomictask = db): Promise<product[]>{
-    // 모든 제품들의 리스트를 가져옴
-    return await task.any('SELECT * FROM products');
+    return await task.any(`SELECT products.id, products.name, products.brand, products.price, products.color,
+    COUNT(likes.product_id)::int as likes
+    FROM products LEFT JOIN "likes"
+    ON likes.product_id = products.id
+    GROUP BY products.id
+    ORDER BY likes DESC`);
   }
 
   /**
@@ -18,8 +30,8 @@ export class ProductService {
    * db 커넥션 하나로
    * @returns 
    * 상세한 제품 내역.
-   * 기본 정보(이름, 설명, 브랜드, 가격, 사이즈, 색상)
-   * 좋아요 수
+   * 기본 정보(이름, 설명, 브랜드, 가격, 색상)
+   * 좋아요 수, 사이즈 종류
    */
   async getProductInfo(id: number, task: atomictask = db): Promise<product>{
     const sql = 'SELECT * FROM products WHERE id = $1';
