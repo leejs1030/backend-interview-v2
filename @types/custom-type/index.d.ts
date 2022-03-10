@@ -6,11 +6,9 @@ declare module 'custom-type'{
     price?: number,
     size?: string,
     color?: string,
-  }
-
-  export type description = {
-    id: number,
     description?: string,
+    likes?: number,
+    sizes?: string[],
   }
 
 
