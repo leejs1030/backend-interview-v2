@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { product } from 'custom-type';
+import { atomictask, product } from 'custom-type';
+import db from 'src/lib/dbconnection';
 
 @Injectable()
 export class ProductService {
-  getProducts(): product[]{
-    return [{id: 1}];
+  async getProducts(task: atomictask = db): Promise<product[]>{
+    return await db.any('SELECT * FROM products');
   }
 }
