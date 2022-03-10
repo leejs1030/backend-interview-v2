@@ -1,5 +1,5 @@
 -- PostgreSQL 사용
-DROP TABLE descriptions, sizes;
+DROP TABLE sizes, likes;
 DROP TABLE products, users;
 -- 혹시 테이블이 이미 있었다면 미리 초기화 하기
 
@@ -16,7 +16,7 @@ CREATE TABLE products(
     brand VARCHAR(200),
     price INTEGER,
     color VARCHAR(30),
-    likes INTEGER DEFAULT 0,
+    description VARCHAR(10000) DEFAULT '',
     PRIMARY KEY(id)
 );
 
@@ -27,9 +27,11 @@ CREATE TABLE sizes(
     PRIMARY KEY(id, size)
 );
 
-CREATE TABLE descriptions(
-    id INTEGER,
-    description VARCHAR(10000),
-    primary key(id),
-    FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE
+CREATE TABLE likes(
+    product_id INTEGER,
+    user_id VARCHAR(20),
+    likes INTEGER DEFAULT 0,
+    primary key(product_id, user_id),
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
