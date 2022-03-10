@@ -9,9 +9,15 @@ declare module 'custom-type'{
     color?: string,
   }
 
+
   export type filter = {
     
   }
 
   export type property = 'name' | 'brand' | 'price' | 'size' | 'color';
+
+  
+  import pgPromise from 'pg-promise';
+  import pg from 'pg-promise/typescript/pg-subset';
+  export type atomictask = (pgPromise.IDatabase<{}, pg.IClient> | pgPromise.ITask<{}>);
 }
