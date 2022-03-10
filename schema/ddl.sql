@@ -1,3 +1,4 @@
+-- PostgreSQL 사용
 DROP TABLE descriptions, sizes;
 DROP TABLE products, users;
 -- 혹시 테이블이 이미 있었다면 미리 초기화 하기
@@ -28,7 +29,7 @@ CREATE TABLE sizes(
 
 CREATE TABLE descriptions(
     id INTEGER,
-    content VARCHAR(10000),
+    description VARCHAR(10000),
     primary key(id),
     FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE
 );
