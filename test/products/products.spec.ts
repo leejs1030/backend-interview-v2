@@ -68,4 +68,21 @@ describe('Test products', () =>{
       })
       console.log(reterr.text);
     })
+
+    it('put test', async () =>{
+      const ret = await request(server).put('/products/35').set('content-type', 'application/x-www-form-urlencoded')
+      .send({
+        brand: "old brand",
+        description: "do not buy",
+        price: "99999999",
+        id: "29438",
+      }).catch(err => console.log("nice!"));
+      console.log("If you don't have nice message just before this messgae, that will be bad!");
+      const correctret = await request(server).put('/products/1').set('content-type', 'application/x-www-form-urlencoded')
+      .send({
+        brand: "remastered bag0",
+        description: "better than before. discount!",
+        price: "10000"
+      })
+    })
 })
