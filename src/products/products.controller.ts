@@ -1,21 +1,19 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Query, Res } from '@nestjs/common';
+import {Response} from 'express';
 import { filtering, product, sorting } from 'custom-type';
 import { ProductService } from './products.service';
-import db from 'src/lib/dbconnection';
 
 @Controller('products')
 export class ProductController{
   constructor(private readonly ProductService: ProductService) {}
 
-  @Get()
-  @HttpCode(200)
-  @Header('content-type', 'application/hal+json')
+  @Get() @HttpCode(200) @Header('content-type', 'application/hal+json')
   async getProducts(@Query('brand') brand: string | string[],
-  @Query('minPrice') minPrice: string,
-  @Query('maxPrice') maxPrice: string,
-  @Query('likes') likes: string,
-  @Query('order') order: string,
-  @Query('direction') direction: string): Promise<{data: product[], _links: any}>{ // 상품 리스트
+  @Query('minPrice') minPrice: string, @Query('maxPrice') maxPrice: string,
+  @Query('likes') likes: string, @Query('order') order: string,
+  @Query('direction') direction: string):
+  Promise<{data: product[], _links: any}>{ // 상품 리스트
+    
     const filterObj: filtering = new Object();
     const sortObj: sorting = new Object();
 
@@ -61,18 +59,37 @@ export class ProductController{
   @Post()
   @HttpCode(201)
   @Header('content-type', 'application/hal+json')
-  async makeProduct(@Body() body: any): Promise<any>{
-    console.log(body);
-    return 1;
+  async makeProduct(@Body() body: any, @Res() res: Response): Promise<number | any>{
+    if(false) return 1; // 권한 체크 필요
+    const name = (body.name === undefined || body.name === null) ? null : body.name as string;
+    const brand = (body.brand === undefined || body.brand === null) ? null : body.brand as string;
+    const price = (body.price === undefined || body.price === null) ? null : parseInt(body.price as string);
+    const color = (body.color === undefined || body.color === null) ? null : body.color as string;
+    const description = (body.description === undefined || body.description === null) ? null : body.description as string;
+    const sizes: {size: string}[] | null = body.sizes;
+    const ret = await this.ProductService.addProduct(name, brand, price, color, description, sizes);
+    const result = {
+      data: ret,
+      _links: [
+        {
+          rel: 'self',
+          href: '/products'
+        }
+      ]
+    }
+    res.set('Location', '/products' + ret.id);
+    res.json(result);
+    return result;
   }
   
   @Get('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async getProductInfo(@Param('id') productId: string): Promise<{product: product, _links: any}>{ // 상품 상세
+  async getProductInfo(@Param('id') productId: string, @Res() res: Response
+  ): Promise<{data: product, _links: any}>{ // 상품 상세
     const ret = await this.ProductService.getProductInfo(parseInt(productId));
     const result = {
-      product: ret,
+      data: ret,
       _links: [
         {
           rel: 'self',
@@ -86,6 +103,8 @@ export class ProductController{
         }
       ]
     }
+    if(ret.id === -1) res.status(404);
+    res.json(result);
     return result;
   }
 
