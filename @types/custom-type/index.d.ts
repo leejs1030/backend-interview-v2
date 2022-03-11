@@ -24,6 +24,12 @@ declare module 'custom-type'{
     direction?: string,
   }
 
+  export type user = {
+    id: string,
+    password?: string,
+    nickname?: string,
+  }
+
   // export type property = 'name' | 'brand' | 'price' | 'size' | 'color';
 
   
