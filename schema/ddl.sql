@@ -17,6 +17,7 @@ CREATE TABLE products(
     price INTEGER,
     color VARCHAR(30),
     description VARCHAR(10000) DEFAULT '',
+    likes INTEGER DEFAULT 0,
     PRIMARY KEY(id)
 );
 
@@ -30,7 +31,6 @@ CREATE TABLE sizes(
 CREATE TABLE likes(
     product_id INTEGER,
     user_id VARCHAR(20),
-    likes INTEGER DEFAULT 0,
     primary key(product_id, user_id),
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
