@@ -51,21 +51,33 @@ export class ProductController{
   @Get('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async getProductInfo(@Param('id') productId: string): Promise<product>{ // 상품 상세
-    return await this.ProductService.getProductInfo(parseInt(productId));
+  async getProductInfo(@Param('id') productId: string): Promise<{data: product, _links: any}>{ // 상품 상세
+    const ret = await this.ProductService.getProductInfo(parseInt(productId));
+    const result = {
+      data: ret,
+      _links: {
+        self: {
+          href: "/products/" + productId,
+        },
+        products: {
+          href: "/products",
+        }
+      }
+    }
+    return result;
   }
 
   @Patch('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async updateProduct(@Body() body: any): Promise<any>{
+  async updateProduct(@Body() body: any, @Param('id') productId: string): Promise<any>{
     
   }
 
   @Delete('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async deleteProduct(): Promise<any>{
+  async deleteProduct(@Param('id') productId: string): Promise<any>{
     
   }
 
