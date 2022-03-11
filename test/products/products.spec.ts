@@ -37,4 +37,35 @@ describe('Test products', () =>{
         const obj = JSON.parse(ret.text);
         expect(obj.data.length).equal((await db.one('SELECT count(*)::int FROM products;')).count);
     });
+
+    it('post test', async() => {
+      const ret = await request(server).post('/products').set('content-type', 'application/x-www-form-urlencoded')
+      .send({
+        name: "super nice thing",
+        brand: "brand new",
+        price: "1",
+        color: "rainbow",
+        description: "super nice discount",
+        sizes: [{size: "XXXXXXL"}, {size: "XXXXXXS"}],
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      console.log(ret.text);
+
+      const reterr = await request(server).post('/products').set('content-type', 'application/x-www-form-urlencoded')
+      .send({
+        name: "super nice thing",
+        brand: "brand new",
+        price: "1000000000",
+        color: "rainbow",
+        description: "super no discount",
+      })
+      .catch(err => {
+        console.error('second one!!!');
+        console.error(err);
+        throw err;
+      })
+      console.log(reterr.text);
+    })
 })
