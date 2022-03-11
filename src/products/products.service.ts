@@ -34,15 +34,16 @@ export class ProductService {
   async getProducts(filterObj?: filtering, sortObj?: sorting, task: atomictask = db): Promise<product[]>{
     let SQL = `SELECT id, name, brand, price, color, likes
     FROM products `;
-    if(filterObj){
+    if(filterObj !== undefined){
       SQL += 'WHERE ';
       let arr: string[] = [];
       if(filterObj.brand) arr.push(pgp.as.format('$1:name IN ($2:csv)', ['brand', filterObj.brand]));
       if(filterObj.maxPrice) arr.push(pgp.as.format('$1:name <= $2', ['price', filterObj.maxPrice]));
       if(filterObj.minPrice) arr.push(pgp.as.format('$1:name >= $2', ['price', filterObj.minPrice]));
+      if(filterObj.likes) arr.push(pgp.as.format('$1:name >= $2', ['likes', filterObj.likes]));
       SQL += arr.join(' AND ');
     }
-    if(sortObj){
+    if(sortObj !== undefined){
       SQL += pgp.as.format(' ORDER BY ${order:name} ' + sortObj.direction, sortObj);
     }
     console.log(SQL);

@@ -13,6 +13,7 @@ export class ProductController{
   async getProducts(@Query('brand') brand: string | string[],
   @Query('minPrice') minPrice: string,
   @Query('maxPrice') maxPrice: string,
+  @Query('likes') likes: string,
   @Query('order') order: string,
   @Query('direction') direction: string): Promise<product[]>{ // 상품 리스트
     const filterObj: filtering = new Object();
@@ -28,6 +29,9 @@ export class ProductController{
     }
     if(maxPrice !== undefined){
       filterObj.maxPrice = parseInt(maxPrice); needFilter = true;
+    }
+    if(likes !== undefined){
+      filterObj.likes = parseInt(likes); needFilter = true;
     }
     if(order !== undefined){
       // sorting 기본값은 ASC. PSQL도 생략시 ASC임.
