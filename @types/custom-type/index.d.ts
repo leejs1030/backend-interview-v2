@@ -9,9 +9,8 @@ declare module 'custom-type'{
     description?: string,
     likes?: number,
     sizes?: string[],
+    _links?: any,
   }
-
-
 
   export type filtering = {
     brand?: string | string[],
