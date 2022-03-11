@@ -37,7 +37,8 @@ export class ProductService {
     if(filterObj !== undefined){
       SQL += 'WHERE ';
       let arr: string[] = [];
-      if(filterObj.brand) arr.push(pgp.as.format('$1:name IN ($2:csv)', ['brand', filterObj.brand]));
+      if(filterObj.brand === 'NULL') arr.push(pgp.as.format('$1:name IS NULL', ['brand']));
+      else if(filterObj.brand) arr.push(pgp.as.format('$1:name IN ($2:csv)', ['brand', filterObj.brand]));
       if(filterObj.maxPrice) arr.push(pgp.as.format('$1:name <= $2', ['price', filterObj.maxPrice]));
       if(filterObj.minPrice) arr.push(pgp.as.format('$1:name >= $2', ['price', filterObj.minPrice]));
       if(filterObj.likes) arr.push(pgp.as.format('$1:name >= $2', ['likes', filterObj.likes]));
