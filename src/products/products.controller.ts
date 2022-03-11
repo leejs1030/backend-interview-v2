@@ -60,7 +60,6 @@ export class ProductController{
   @HttpCode(201)
   @Header('content-type', 'application/hal+json')
   async makeProduct(@Body() body: any, @Res() res: Response): Promise<number | any>{
-    if(false) return 1; // 권한 체크 필요
     const name = (body.name === undefined || body.name === null) ? null : body.name as string;
     const brand = (body.brand === undefined || body.brand === null) ? null : body.brand as string;
     const price = (body.price === undefined || body.price === null) ? null : parseInt(body.price as string);
