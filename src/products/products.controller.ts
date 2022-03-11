@@ -77,8 +77,8 @@ export class ProductController{
         }
       ]
     }
-    res.set('Location', '/products' + ret.id);
-    res.json(result);
+    res.set('Location', '/products/' + ret.product.id);
+    res.status(201).json(result);
     return result;
   }
 
@@ -136,8 +136,20 @@ export class ProductController{
   @Delete('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async deleteProduct(@Param('id') productId: string): Promise<any>{
-    
+  async deleteProduct(@Param('id') productId: string): Promise<{data: {id: number}, _links: any}>{
+    await this.ProductService.deleteProduct(parseInt(productId));
+    return {
+      data:{
+        id: parseInt(productId),
+      },
+      _links:[
+        {
+          rel: 'self',
+          href: '/products/' + productId,
+          type: 'DELETE',
+        }
+      ]
+    };
   }
 
 }

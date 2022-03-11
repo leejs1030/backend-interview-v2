@@ -52,6 +52,7 @@ describe('Test products', () =>{
         console.error(err);
       })
       console.log(ret.text);
+      console.log(ret.header);
 
       const reterr = await request(server).post('/products').set('content-type', 'application/x-www-form-urlencoded')
       .send({
@@ -67,6 +68,7 @@ describe('Test products', () =>{
         throw err;
       })
       console.log(reterr.text);
+      console.log(reterr.header);
     })
 
     it('put test', async () =>{
@@ -84,5 +86,27 @@ describe('Test products', () =>{
         description: "better than before. discount!",
         price: "10000"
       })
+    })
+
+    it('delete test', async () =>{
+      const ret = await request(server).post('/products').set('content-type', 'application/x-www-form-urlencoded')
+      .send({
+        name: "test for delete",
+        sizes: [{size: "XL"}],
+      })
+      .catch(err => {
+        console.error(err); expect(1).equal(2);
+      })
+      ret.text = JSON.parse(ret.text);
+      console.log(ret?.json);
+
+      await db.one('SELECT * FROM products WHERE id = $1', [ret.text.data.product.id]);
+
+      const delret = await request(server).delete('/products/' + ret.text.data.product.id);
+      console.log(delret.status);
+      console.log(delret.text);
+      console.log(delret);
+
+      await db.none('SELECT * FROM products WHERE id = $1', [ret.text.data.product.id]);
     })
 })

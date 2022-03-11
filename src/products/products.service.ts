@@ -78,12 +78,12 @@ export class ProductService {
   }
 
   async addProduct(name: string, brand: string | null, price: number | null, color: string | null, description: string | null,
-    sizes: {size: string}[] | null, task:atomictask = db): Promise<any> {
+    sizes: {size: string}[] | null, task:atomictask = db): Promise<{product: product, sizes: {size: string}[]}> {
     const insertSQL = pgp().helpers.insert({name: name, brand: brand, price: price, color: color, description: description}, null, 'products')
     + ' RETURNING *';
     return await task.task(async t =>{
-      const ret = await t.one(insertSQL);
-      if(sizes === null) return {ret, sizes: []};
+      const ret: product = await t.one(insertSQL);
+      if(sizes === null) return {product: ret, sizes: []};
       const idSizes = sizes.map(e => {
         return {
           id: ret.id,
@@ -92,7 +92,7 @@ export class ProductService {
       })
       const sizeSQL = pgp().helpers.insert(idSizes, ['id', 'size'], 'sizes') + ' RETURNING size';
       const sizeret = await t.any(sizeSQL);
-      return {ret, sizes: sizeret};
+      return {product: ret, sizes: sizeret};
     })
   }
 
@@ -100,5 +100,9 @@ export class ProductService {
     const productSQL = pgp().helpers.update(body, null, 'products') +
     ' WHERE id = $1 RETURNING *';
     return await task.one(productSQL, [productId]);
+  }
+
+  async deleteProduct(productId: number, task:atomictask = db){
+    return await task.none('DELETE FROM products WHERE id = $1', [productId]);
   }
 }
