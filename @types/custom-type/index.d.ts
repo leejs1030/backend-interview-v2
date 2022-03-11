@@ -12,9 +12,18 @@ declare module 'custom-type'{
   }
 
 
-  // export type filter = {
-    
-  // }
+
+  export type filtering = {
+    brand?: string | string[],
+    minPrice?: number,
+    maxPrice?: number,
+    likes?: number,
+  }
+
+  export type sorting = {
+    order?: string,
+    direction?: string,
+  }
 
   // export type property = 'name' | 'brand' | 'price' | 'size' | 'color';
 
