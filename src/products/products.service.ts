@@ -81,7 +81,7 @@ export class ProductService {
     sizes: {size: string}[] | null, task:atomictask = db): Promise<{product: product, sizes: {size: string}[]}> {
     const insertSQL = pgp().helpers.insert({name: name, brand: brand, price: price, color: color, description: description}, null, 'products')
     + ' RETURNING *';
-    return await task.task(async t =>{
+    return await task.tx(async t =>{
       const ret: product = await t.one(insertSQL);
       if(sizes === null) return {product: ret, sizes: []};
       const idSizes = sizes.map(e => {
