@@ -1,24 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { atomictask, filtering, product, sorting } from 'custom-type';
-import db from 'src/lib/dbconnection';
-import { toPostgres } from 'src/lib/usefulJS';
-
+import db from '../lib/dbconnection';
 import pgp from 'pg-promise';
 
-const andProps = obj => ({
-  rawType: true,
-  toPostgres: () => Object.keys(obj).map(k => {
-      const val = obj[k];
-      if (val === null || val === undefined) {
-          return pgp.as.format('$1:name IS NULL', [k]);
-      }
-      // if (Array.isArray(obj[k])){
-      //   console.log(obj[k]);
-      //   return pgp.as.format('$1:name in $2:csv', [k, val]);
-      // }
-      return pgp.as.format('$1:name = $2', [k, val]);
-  }).join(' AND ')
-});
 
 
 @Injectable()
@@ -91,5 +75,24 @@ export class ProductService {
       console.log(err);
       throw err;
     }
+  }
+
+  async addProduct(name: string, brand: string | null, price: number | null, color: string | null, description: string | null,
+    sizes: {size: string}[] | null, task:atomictask = db): Promise<any> {
+    const insertSQL = pgp().helpers.insert({name: name, brand: brand, price: price, color: color, description: description}, null, 'products')
+    + ' RETURNING *';
+    return await task.task(async t =>{
+      const ret = await t.one(insertSQL);
+      const idSizes = sizes.map(e => {
+        return {
+          id: ret.id,
+          size: e.size,
+        };
+      })
+      const sizeSQL = pgp().helpers.insert(idSizes, ['id', 'size'], 'sizes') + ' RETURNING size';
+      const sizeret = await t.any(sizeSQL);
+      return {ret, sizeret};
+    })
+
   }
 }
