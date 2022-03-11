@@ -94,6 +94,11 @@ export class ProductService {
       const sizeret = await t.any(sizeSQL);
       return {ret, sizes: sizeret};
     })
+  }
 
+  async updateProduct(body: product, productId: number, task:atomictask = db){
+    const productSQL = pgp().helpers.update(body, null, 'products') +
+    ' WHERE id = $1 RETURNING *';
+    return await task.one(productSQL, [productId]);
   }
 }

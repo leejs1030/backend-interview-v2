@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
 import {Response} from 'express';
 import { filtering, product, sorting } from 'custom-type';
 import { ProductService } from './products.service';
@@ -82,7 +82,7 @@ export class ProductController{
     res.json(result);
     return result;
   }
-  
+
   @Get('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
@@ -109,12 +109,30 @@ export class ProductController{
     return result;
   }
 
-  @Patch('/:id')
+  @Put('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async updateProduct(@Body() body: any, @Param('id') productId: string): Promise<any>{
+  async updateProduct(@Body() body: any, @Param('id') productId: string, @Res() res: Response): Promise<any>{
+    let ret: product;
     
+    if(body.id || body.likes) return res.status(400).send('You cannot change this!');
+
+    ret = await this.ProductService.updateProduct(body, parseInt(productId));
+    
+    const result = {
+      data: ret,
+      _links: [
+        {
+          rel: 'self',
+          href: '/products/' + productId,
+          type: 'PATCH',
+        }
+      ]
+    }
+    res.status(200).json(result);
+    return result;
   }
+  
 
   @Delete('/:id')
   @HttpCode(200)
