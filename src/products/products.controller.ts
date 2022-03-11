@@ -42,18 +42,18 @@ export class ProductController{
 
     }
     const ret = await this.ProductService.getProducts((needFilter) ? filterObj : undefined, (needSort) ? sortObj : undefined);
-    ret.map(e => e._links = {
-      self: {
-        href: '/products/' + e.id,
-      }
-    })
+    ret.map(e => e._links = [{
+      rel:'contents',
+      href: '/products/' + e.id,
+      type: 'GET',
+    }]);
     const result = {
       data: ret,
-      _links: {
-        self: {
-          href: '/products',
-        }
-      }
+      _links: [{
+        rel: 'self',
+        href: '/products',
+        type: 'GET',
+      }]
     }
     return result;
   }
@@ -73,14 +73,18 @@ export class ProductController{
     const ret = await this.ProductService.getProductInfo(parseInt(productId));
     const result = {
       product: ret,
-      _links: {
-        self: {
-          href: "/products/" + productId,
+      _links: [
+        {
+          rel: 'self',
+          href: '/products/' + productId,
+          type: 'GET',
         },
-        products: {
-          href: "/products",
+        {
+          rel: 'parent',
+          href: '/products',
+          type: 'GET',
         }
-      }
+      ]
     }
     return result;
   }
