@@ -25,7 +25,7 @@ export class AuthService {
     }
 
     async createUser(user: user, task:atomictask = db){
-        if(!this.usersService.getUserById(user.id)) return false;
+        if((await this.usersService.getUserById(user.id))) return false;
         user.password = await generatePassword(user.password);
         return await task.one('INSERT INTO users VALUES(${id}, ${password}, ${nickname}) RETURNING *', user);
     }
