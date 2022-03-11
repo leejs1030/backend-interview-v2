@@ -15,7 +15,7 @@ export class ProductController{
   @Query('maxPrice') maxPrice: string,
   @Query('likes') likes: string,
   @Query('order') order: string,
-  @Query('direction') direction: string): Promise<product[]>{ // 상품 리스트
+  @Query('direction') direction: string): Promise<{data: product[], _links: any}>{ // 상품 리스트
     const filterObj: filtering = new Object();
     const sortObj: sorting = new Object();
 
@@ -42,7 +42,20 @@ export class ProductController{
 
     }
     const ret = await this.ProductService.getProducts((needFilter) ? filterObj : undefined, (needSort) ? sortObj : undefined);
-    return ret;
+    ret.map(e => e._links = {
+      self: {
+        href: '/products/' + e.id,
+      }
+    })
+    const result = {
+      data: ret,
+      _links: {
+        self: {
+          href: '/products',
+        }
+      }
+    }
+    return result;
   }
 
   @Post()
@@ -56,10 +69,10 @@ export class ProductController{
   @Get('/:id')
   @HttpCode(200)
   @Header('content-type', 'application/hal+json')
-  async getProductInfo(@Param('id') productId: string): Promise<{data: product, _links: any}>{ // 상품 상세
+  async getProductInfo(@Param('id') productId: string): Promise<{product: product, _links: any}>{ // 상품 상세
     const ret = await this.ProductService.getProductInfo(parseInt(productId));
     const result = {
-      data: ret,
+      product: ret,
       _links: {
         self: {
           href: "/products/" + productId,
