@@ -1,0 +1,4 @@
+{
+    "mochaExplorer.files": "test/**/*.spec.ts",
+    "mochaExplorer.require": ["ts-node/register", "dotenv/config"],
+}
