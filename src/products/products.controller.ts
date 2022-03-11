@@ -31,10 +31,11 @@ export class ProductController{
     }
     if(order !== undefined){
       // sorting 기본값은 ASC. PSQL도 생략시 ASC임.
-      sortObj.order = order; sortObj.direction = "ASC"; needSort = false;
-    }
-    if(direction !== undefined){
-      sortObj.direction = "DESC"; needSort = false;
+      sortObj.order = order; needSort = true;
+      sortObj.direction = direction;
+      if(!sortObj.direction || !(sortObj.direction.toUpperCase() === 'DESC' || sortObj.direction.toUpperCase() === 'ASC'))
+        sortObj.direction = "ASC";
+
     }
     const ret = await this.ProductService.getProducts((needFilter) ? filterObj : undefined, (needSort) ? sortObj : undefined);
     return ret;
