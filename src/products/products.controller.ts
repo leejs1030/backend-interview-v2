@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
-import {Response} from 'express';
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {Request, Response} from 'express';
 import { filtering, product, sorting } from 'custom-type';
 import { ProductService } from './products.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('products')
 export class ProductController{
@@ -149,6 +150,35 @@ export class ProductController{
                 }
             ]
         };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/:id')
+    @HttpCode(200)
+    @Header('content-type', 'application/hal+json')
+    async doLike(@Param('id') productId: string, @Req() req: Request): Promise<any>{
+        console.log("this?");
+        console.log(req.user);
+        const ret = await this.ProductService.doLike(parseInt(productId), (req.user as any).username);
+        const result = {
+            data:{
+                liked: ret,
+                user_id: (req.user as any).username,
+            },
+            _links:[
+                {
+                    rel: 'self',
+                    href: '/products/' + productId,
+                    type: 'POST',
+                },
+                {
+                    rel: 'contents',
+                    href: '/products/' + productId,
+                    type: 'GET',
+                }
+            ]
+        }
+        return result;
     }
 
 }

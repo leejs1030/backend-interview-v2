@@ -106,5 +106,18 @@ export class ProductService {
         return await task.none('DELETE FROM products WHERE id = $1', [productId]);
     }
 
-    
+    async doLike(productId: number, userId: string, task: atomictask = db){
+        return await task.tx(async t =>{
+            const ret = await t.oneOrNone('SELECT * FROM likes WHERE product_id = $1 and user_id = $2', [productId, userId]);
+            if(ret){ // 이미 like 해서 unlike 작업
+                await t.none('DELETE FROM likes WHERE product_id = $1 and user_id = $2', [productId, userId]);
+                await t.none('UPDATE products SET likes = likes - 1 WHERE id = $1', [productId]);
+                return false;
+            } else{ // like 작업
+                await t.none('INSERT INTO likes VALUES($1, $2)', [productId, userId]);
+                await t.none('UPDATE products SET likes = likes + 1 WHERE id = $1', [productId]);
+                return true;
+            }
+        })
+    }
 }
