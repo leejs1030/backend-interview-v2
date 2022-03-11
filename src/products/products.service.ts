@@ -83,6 +83,7 @@ export class ProductService {
     + ' RETURNING *';
     return await task.task(async t =>{
       const ret = await t.one(insertSQL);
+      if(sizes === null) return {ret, sizes: []};
       const idSizes = sizes.map(e => {
         return {
           id: ret.id,
@@ -91,7 +92,7 @@ export class ProductService {
       })
       const sizeSQL = pgp().helpers.insert(idSizes, ['id', 'size'], 'sizes') + ' RETURNING size';
       const sizeret = await t.any(sizeSQL);
-      return {ret, sizeret};
+      return {ret, sizes: sizeret};
     })
 
   }

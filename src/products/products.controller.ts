@@ -13,7 +13,7 @@ export class ProductController{
   @Query('likes') likes: string, @Query('order') order: string,
   @Query('direction') direction: string):
   Promise<{data: product[], _links: any}>{ // 상품 리스트
-    
+
     const filterObj: filtering = new Object();
     const sortObj: sorting = new Object();
 
@@ -66,14 +66,15 @@ export class ProductController{
     const price = (body.price === undefined || body.price === null) ? null : parseInt(body.price as string);
     const color = (body.color === undefined || body.color === null) ? null : body.color as string;
     const description = (body.description === undefined || body.description === null) ? null : body.description as string;
-    const sizes: {size: string}[] | null = body.sizes;
+    const sizes: {size: string}[] | null = (body.sizes === undefined || body.sizes === null) ? null : body.sizes;
     const ret = await this.ProductService.addProduct(name, brand, price, color, description, sizes);
     const result = {
       data: ret,
       _links: [
         {
           rel: 'self',
-          href: '/products'
+          href: '/products',
+          type: 'POST',
         }
       ]
     }
